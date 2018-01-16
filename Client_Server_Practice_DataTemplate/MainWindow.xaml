@@ -8,6 +8,37 @@
         Title="MainWindow" Height="350" Width="525"
         DataContext="{Binding Source={StaticResource Locator}, Path=Main}">
     <Grid>
-        
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="1*"/>
+            <ColumnDefinition Width="1*"/>
+            <ColumnDefinition Width="1*"/>
+        </Grid.ColumnDefinitions>
+
+        <StackPanel Orientation="Vertical" VerticalAlignment="Center" Margin="10">
+            <Button Content="Start Server" Command="{Binding StartServer}"/>
+            <StackPanel Orientation="Horizontal" Margin="10">
+                <Button Content="Send" Command="{Binding SendBtn}" CommandParameter="{Binding ElementName=MessageServer}"/>
+                <TextBox Width="80" Height="20" Margin="5,0,0,0" Name="MessageServer" Text="{Binding Message, UpdateSourceTrigger=PropertyChanged}"/>
+            </StackPanel>
+        </StackPanel>
+
+        <ListBox Grid.Column="1" ItemsSource="{Binding MesssageList}">
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <StackPanel Orientation="Horizontal" Margin="5">
+                        <Label Content="{Binding MessageTime}"/>
+                        <Label Content="{Binding Message}" Margin="5,0,0,0"/>
+                    </StackPanel>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+
+        <StackPanel Orientation="Vertical" VerticalAlignment="Center" Margin="10" Grid.Column="2">
+            <Button Content="Start Client" Command="{Binding StartClient}"/>
+            <StackPanel Orientation="Horizontal" Margin="10">
+                <Button Content="Send" Command="{Binding SendBtn}" CommandParameter="{Binding ElementName=MessageClient}"/>
+                <TextBox Width="80" Height="20" Margin="5,0,0,0" Name="MessageClient" Text="{Binding Message}"/>
+            </StackPanel>
+        </StackPanel>
     </Grid>
 </Window>

@@ -1,34 +1,76 @@
+using Client_Server_Practice_DataTemplate.Communication;
+using Client_Server_Practice_DataTemplate.TheClient;
 using GalaSoft.MvvmLight;
+using GalaSoft.MvvmLight.CommandWpf;
+using System;
+using System.Collections.ObjectModel;
 
 namespace Client_Server_Practice_DataTemplate.ViewModel
 {
-    /// <summary>
-    /// This class contains properties that the main View can data bind to.
-    /// <para>
-    /// Use the <strong>mvvminpc</strong> snippet to add bindable properties to this ViewModel.
-    /// </para>
-    /// <para>
-    /// You can also use Blend to data bind with the tool's support.
-    /// </para>
-    /// <para>
-    /// See http://www.galasoft.ch/mvvm
-    /// </para>
-    /// </summary>
+
     public class MainViewModel : ViewModelBase
     {
-        /// <summary>
-        /// Initializes a new instance of the MainViewModel class.
-        /// </summary>
+        public RelayCommand StartServer { get; set; }
+        public RelayCommand StartClient { get; set; }
+        public RelayCommand SendBtn { get; set; }
+
+        public string Message
+        {
+            get => message;
+            set { message = value; }
+        }
+        //public string MessageTime { get; set; }
+
+        public ObservableCollection<MessageVM> MesssageList { get; set; }
+
+        Server server;
+        Client client;
+
+        bool isClient = false;
+        bool isServer = false;
+        private string message = "";
+        private DateTime _messageTime = DateTime.Now;
+        private const int port = 10100;
+
+        public DateTime MessageTime { get => _messageTime; set => _messageTime = value; }
+
         public MainViewModel()
         {
-            ////if (IsInDesignMode)
-            ////{
-            ////    // Code runs in Blend --> create design time data.
-            ////}
-            ////else
-            ////{
-            ////    // Code runs "for real"
-            ////}
+            MesssageList = new ObservableCollection<MessageVM>();
+
+            StartServer = new RelayCommand(() =>
+                {
+                    server = new Server(port, UpdateGUI);
+                    isServer = true;
+                });
+            StartClient = new RelayCommand(() =>
+            {
+                client = new Client(port, UpdateGUI);
+                isClient = true;
+            });
+
+            SendBtn = new RelayCommand(
+                () =>
+                {
+                    if (isClient)
+                    {
+                        client.Send(Message);
+                    }
+                    else
+                    {
+                        server.Send(Message);
+                    }
+                });
+        }
+
+        public void UpdateGUI(string message)
+        {
+            App.Current.Dispatcher.Invoke(
+                () =>
+                {
+                    MesssageList.Add(new MessageVM(message, MessageTime.ToShortTimeString()));
+                }
+                );
         }
     }
 }
